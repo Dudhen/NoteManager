@@ -1,5 +1,5 @@
 
-function deleteNote(id, url) {
+function deleteNote(id, url, url_redirect) {
   var action = confirm("Вы уверены, что хотите удалить заметку?");
   if (action !== false) {
     $.ajax({
@@ -11,6 +11,9 @@ function deleteNote(id, url) {
         success: function (data) {
             if (data.deleted) {
               $("#table_id #note_" + id).remove();
+            }
+            if (url_redirect) {
+                window.location.href = url_redirect
             }
         }
     });
@@ -26,8 +29,8 @@ function chosenOneNote(id, url) {
         dataType: 'json',
         success: function (data) {
             if (data.is_chosen_one) {
-                document.getElementById("i_id_" + id).className = 'btn btn-warning form-control';
-                document.getElementById("i_id_" + id).textContent = 'Убрать'
+                document.getElementById("i_id_" + id).className = 'btn btn-warning';
+                document.getElementById("i_id_" + id).textContent = 'Убрать '
             } else {
                 document.getElementById("i_id_" + id).className = 'btn btn-outline-dark';
                 document.getElementById("i_id_" + id).textContent = 'Поставить'
@@ -37,12 +40,6 @@ function chosenOneNote(id, url) {
    }
 
    function sortedResults(sorted_item, url) {
-       // var created_at = document.getElementById("created_at")
-       // created_at.textContent = 'Время и дата'
-       // var category = document.getElementById("category")
-       // category.textContent = 'Категория'
-       // var is_chosen_one = document.getElementById("is_chosen_one")
-       // is_chosen_one.textContent = 'Метка "Избранное"'
       $.ajax({
         url: url,
         data: {

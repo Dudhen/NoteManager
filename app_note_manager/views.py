@@ -62,12 +62,16 @@ class NoteListView(LoginRequiredMixin, ListView):
             (note.category, note.category) for note in self.get_queryset()
         ])
 
-        date_from = Note.objects.filter(
-            author=user
-        ).earliest('created_at').created_at
-        date_by = Note.objects.filter(
-            author=user
-        ).latest('created_at').created_at
+        try:
+            date_from = Note.objects.filter(
+                author=user
+            ).earliest('created_at').created_at
+            date_by = Note.objects.filter(
+                author=user
+            ).latest('created_at').created_at
+        except Note.DoesNotExist:
+            date_from = None
+            date_by = None
 
         # print(date_from)
 
@@ -138,7 +142,7 @@ class NoteDeleteView(LoginRequiredMixin, View):
         id1 = request.GET.get('id', None)
         Note.objects.get(id=id1).delete()
         data = {
-            'deleted': True
+            'deleted': True,
         }
         return JsonResponse(data)
 
@@ -150,37 +154,14 @@ class ChosenOneNoteView(LoginRequiredMixin, View):
         note = Note.objects.get(id=id1)
         if note.is_chosen_one:
             is_chosen_one = False
-            note.is_chosen_one = is_chosen_one
-            note.save()
         else:
             is_chosen_one = True
-            note.is_chosen_one = is_chosen_one
-            note.save()
+        note.is_chosen_one = is_chosen_one
+        note.save()
         data = {
             'is_chosen_one': is_chosen_one
         }
         return JsonResponse(data)
-
-
-# class DetailCrudNoteView(View):
-#     def get(self, request):
-#         id1 = request.GET.get('id', None)
-#         # name1 = request.GET.get('name', None)
-#         # address1 = request.GET.get('address', None)
-#         # note_age = request.GET.get('age', None)
-#
-#         obj = Note.objects.get(id=id1)
-#         # obj.name = name1
-#         # obj.address = address1
-#         # obj.age = age1
-#         # obj.save()
-#
-#         note = {'id': obj.id, 'name': obj.name, 'address': obj.address, 'age': obj.age}
-#
-#         data = {
-#             'note': note
-#         }
-#         return JsonResponse(data)
 
 
 class NoteDetailView(LoginRequiredMixin, DetailView):

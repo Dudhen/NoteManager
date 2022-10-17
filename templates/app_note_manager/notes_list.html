@@ -38,7 +38,7 @@
             <button class="btn btn-outline-dark w-100" type="button" onclick="applyFilters('{% url "search_result" %}')">Применить</button>
         </form>
     <br>
-
+    {% if note_list %}
     <div id="result_list">
                     <table id="table_id" class="table table-sm table-bordered table-hover">
                         <thead>
@@ -74,18 +74,21 @@
                                     <td class="category" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.category }}</td>
                                     <td align="center" class="is_chosen_one">
                                         {% if note.is_chosen_one %}
-                                        <button class="btn btn-warning form-control" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Убрать</button>
+                                        <button class="btn btn-warning" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Убрать </button>
                                         {% else %}
                                         <button class="btn btn-outline-dark" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Поставить</button>
                                         {% endif %}
                                     </td>
                                     <td align="center">
-                                        <button class="btn btn-danger form-control" onclick="deleteNote('{{ note.pk }}', '{% url "note_delete" %}')">Удалить</button>
+                                        <button class="btn btn-danger" onclick="deleteNote('{{ note.pk }}', '{% url "note_delete" %}')">Удалить</button>
                                     </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
     </div>
+    {% else %}
+<p class="lead text-center">У вас пока нет ни одной заметки</p>
+{% endif %}
 </div>
 {% endblock content %}

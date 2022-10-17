@@ -29,7 +29,7 @@
                                     <td class="text-center" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.category }}</td>
                                     <td align="center">
                                         {% if note.is_chosen_one %}
-                                        <button class="btn btn-warning form-control" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Убрать</button>
+                                        <button class="btn btn-warning" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Убрать </button>
                                         {% else %}
                                         <button class="btn btn-outline-dark" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Поставить</button>
                                         {% endif %}

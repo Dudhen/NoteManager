@@ -3,33 +3,36 @@
 {% block title %}Заметка{% endblock title %}
 
 {% block content %}
-    <h3 class="my-3 text-center">Отчет за {{ note.created_at }}</h3>
+    <h3 class="my-3 text-center">Заметка от {{ note.created_at }}</h3>
     <div class="container-fluid w-100">
+    <div class="fw-bolder">Отметка "Избранное":</div>
+    {% if note.is_chosen_one %}
+       <button class="btn btn-warning" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Убрать</button>
+    {% else %}
+       <button class="btn btn-outline-dark" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Поставить</button>
+    {% endif %}
         <div class="w-auto">
-            <div class="fw-bolder">Объект:</div>
+            <div class="fw-bolder">Заголовок:</div>
             <p>{{ note.title }}</p>
         </div>
         <div class="w-auto">
-            <div class="fw-bolder">Разделы проекта:</div>
+            <div class="fw-bolder">Категория:</div>
             <p>{{ note.category }}</p>
         </div>
         <div class="w-auto text-break">
-            <div class="fw-bolder">Текст отчета:</div>
+            <div class="fw-bolder">Текст заметки:</div>
+            <li class="list-group-item">
             {{ note.text|safe }}
+            </li>
         </div>
     </div>
 
     <div class="container">
         <div class="row mt-3">
-            <a href="{% url 'note_detail' note.pk %}" type="button" class="btn btn-danger mb-3">Удалить отчёт</a>
-            <a id="loading" onclick="myFunction()" href="{% url 'note_detail' note.pk %}" type="button" class="btn btn-warning">Изменить отчёт</a>
-            <!--Изменяем текст кнопки после нажатия в течении 2 секунд-->
-            <script>
-                function myFunction() {
-                    document.getElementById("loading").textContent = "Загрузка отчета...";
-                    setTimeout(() => {document.getElementById("loading").textContent = "Изменить отчёт"}, 2000);
-                }
-            </script>
+{#            <a href="{% url 'note_detail' note.pk %}" type="button" class="btn btn-danger mb-3">Удалить отчёт</a>#}
+            <a id="loading" href="{% url 'note_detail' note.pk %}" type="button" class="btn btn-warning">Изменить отчёт</a>
+            <br>
+            <button class="btn btn-danger form-control" onclick="deleteNote('{{ note.pk }}', '{% url "note_delete" %}', '{% url "note_list" %}')">Удалить заметку</button>
         </div>
     </div>
 {% endblock content %}
