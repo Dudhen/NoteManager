@@ -6,6 +6,7 @@
 
 {% block content %}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <div id="my_result">
         <ul class="mb-3 navbar-nav mr-auto ">
             <div class="nav-item">
                 <div class="container">
@@ -34,7 +35,7 @@
                 </tr>
         </tbody>
             </table>
-            <button class="btn btn-outline-dark" type="button" onclick="applyFilters()">Применить</button>
+            <button class="btn btn-outline-dark w-100" type="button" onclick="applyFilters('{% url "search_result" %}')">Применить</button>
         </form>
     <br>
 
@@ -44,15 +45,18 @@
                             <tr>
                                 <th class="text-center" width="55%"><p class="fw-light">Заголовок</p></th>
                                 <th class="text-center" width="15%"
-                                    onclick="sortedResults('created_at')" onmouseover="setColor(this, '#dadada')"
+                                    onclick="sortedResults('created_at', '{% url "search_result" %}')"
+                                    onmouseover="setColor(this, '#dadada')"
                                     onmouseout ="setColor(this, '#f0f0f0')">
                                     <p class="fw-light" id="created_at">Время и дата ↑</p></th>
                                 <th class="text-center" width="20%"
-                                    onclick="sortedResults('category')" onmouseover="setColor(this, '#dadada')"
+                                    onclick="sortedResults('category', '{% url "search_result" %}')"
+                                    onmouseover="setColor(this, '#dadada')"
                                     onmouseout ="setColor(this, '#f0f0f0')">
                                     <p class="fw-light" id="category">Категория</p></th>
                                 <th class="text-center" width="15%"
-                                    onclick="sortedResults('is_chosen_one')" onmouseover="setColor(this, '#dadada')"
+                                    onclick="sortedResults('is_chosen_one', '{% url "search_result" %}')"
+                                    onmouseover="setColor(this, '#dadada')"
                                     onmouseout ="setColor(this, '#f0f0f0')">
                                     <p class="fw-light" id="is_chosen_one">Метка "Избранное"</p></th>
                                 <th class="text-center" width="10%"><p class="fw-light">Удалить</p></th>
@@ -61,126 +65,27 @@
 
                         <tbody>
                             {% for note in note_list %}
-                            <tr
-{#                                    onclick="location.href=&#34;{% url 'note_detail' note.pk %}&#34;" #}
+                            <tr class="text-center"
+{#                                    onclick="location.href=&#34;{% url 'note_detail' note.pk %}&#34;"#}
+{#                                    data-toggle="modal" data-target="#myModal"#}
                                     id="note_{{note.pk}}" >
-                                    <td class="text-center"><h5>{{ note.title }}</h5></td>
-                                    <td class="text-center">{{ note.created_at|date:"H:i - d.m.Y" }}</td>
-                                    <td class="text-center">{{ note.category }}</td>
-                                    <td align="center">
+                                    <td class="title" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')"><h5>{{ note.title }}</h5></td>
+                                    <td class="created_at" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.created_at|date:"H:i - d.m.Y" }}</td>
+                                    <td class="category" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.category }}</td>
+                                    <td align="center" class="is_chosen_one">
                                         {% if note.is_chosen_one %}
-                                        <button class="btn btn-warning form-control" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}')">Убрать</button>
+                                        <button class="btn btn-warning form-control" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Убрать</button>
                                         {% else %}
-                                        <button class="btn btn-outline-dark" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}')">Поставить</button>
+                                        <button class="btn btn-outline-dark" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Поставить</button>
                                         {% endif %}
                                     </td>
                                     <td align="center">
-                                        <button class="btn btn-danger form-control" onclick="deleteNote('{{ note.pk }}')">Удалить</button>
+                                        <button class="btn btn-danger form-control" onclick="deleteNote('{{ note.pk }}', '{% url "note_delete" %}')">Удалить</button>
                                     </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
     </div>
-
-    <script>
-    function deleteNote(id) {
-  var action = confirm("Вы уверены, что хотите удалить заметку?");
-  if (action !== false) {
-    $.ajax({
-        url: '{% url "note_delete" %}',
-        data: {
-            'id': id,
-        },
-        dataType: 'json',
-        success: function (data) {
-            if (data.deleted) {
-              $("#table_id #note_" + id).remove();
-            }
-        }
-    });
-   }}
-
-    function chosenOneNote(id) {
-      $.ajax({
-        url: '{% url "chosen_one_note" %}',
-        data: {
-            'id': id,
-        },
-        dataType: 'json',
-        success: function (data) {
-            if (data.is_chosen_one) {
-                document.getElementById("i_id_" + id).className = 'btn btn-warning form-control';
-                document.getElementById("i_id_" + id).textContent = 'Убрать'
-            } else {
-                document.getElementById("i_id_" + id).className = 'btn btn-outline-dark';
-                document.getElementById("i_id_" + id).textContent = 'Поставить'
-            }
-         }
-    });
-   }
-
-   function sortedResults(sorted_item) {
-       var created_at = document.getElementById("created_at")
-       created_at.textContent = 'Время и дата'
-       var category = document.getElementById("category")
-       category.textContent = 'Категория'
-       var is_chosen_one = document.getElementById("is_chosen_one")
-       is_chosen_one.textContent = 'Метка "Избранное"'
-      $.ajax({
-        url: '{% url "search_result" %}',
-        data: {
-            'sorted_item': sorted_item,
-        },
-        dataType: 'json',
-        success: function (data) {
-
-            $('#result_list').html(data.html);
-         }
-    });
-   }
-
-   function applyFilters() {
-       const formData = new FormData(document.getElementById("filters-form"));
-       var title = formData.get('title');
-       var category = formData.get('category');
-       var date_from = formData.get('date_from');
-       var date_by = formData.get('date_by');
-       var is_chosen_one = formData.get('is_chosen_one');
-      $.ajax({
-        url: '{% url "search_result" %}',
-        data: {
-            'title': title,
-            'category': category,
-            'date_from': date_from,
-            'date_by': date_by,
-            'is_chosen_one': is_chosen_one,
-            'use_filter': true,
-        },
-        dataType: 'json',
-        success: function (data) {
-
-            $('#result_list').html(data.html);
-         }
-    });
-   }
-
-    function showFilters() {
-        var filters_form_hidden = document.getElementById('filters-form').hidden;
-        if (filters_form_hidden === false) {
-            document.getElementById('filters-form').hidden = true;
-            document.getElementById('filters').textContent = 'Показать фильтры'
-        } else {
-            document.getElementById('filters-form').hidden = false;
-            document.getElementById('filters').textContent = 'Скрыть фильтры'
-                }
-            }
-
-    function setColor(thisObj, color)
- {
-    thisObj.style.backgroundColor = color;
- }
-    </script>
-
-
+</div>
 {% endblock content %}

@@ -21,8 +21,8 @@
 
     <div class="container">
         <div class="row mt-3">
-            <a href="{% url 'note' note.pk %}" type="button" class="btn btn-danger mb-3">Удалить отчёт</a>
-            <a id="loading" onclick="myFunction()" href="{% url 'note' note.pk %}" type="button" class="btn btn-warning">Изменить отчёт</a>
+            <a href="{% url 'note_detail' note.pk %}" type="button" class="btn btn-danger mb-3">Удалить отчёт</a>
+            <a id="loading" onclick="myFunction()" href="{% url 'note_detail' note.pk %}" type="button" class="btn btn-warning">Изменить отчёт</a>
             <!--Изменяем текст кнопки после нажатия в течении 2 секунд-->
             <script>
                 function myFunction() {

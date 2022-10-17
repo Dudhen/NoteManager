@@ -77,7 +77,7 @@ class NoteListView(LoginRequiredMixin, ListView):
         return context
 
 
-class SearchResultsView(View):
+class SearchResultsView(LoginRequiredMixin, View):
 
     def get(self, request):
         user = self.request.user
@@ -132,7 +132,7 @@ class SearchResultsView(View):
         return HttpResponse(json.dumps({'html': html}))
 
 
-class NoteDeleteView(View):
+class NoteDeleteView(LoginRequiredMixin, View):
 
     def get(self, request):
         id1 = request.GET.get('id', None)
@@ -143,7 +143,7 @@ class NoteDeleteView(View):
         return JsonResponse(data)
 
 
-class ChosenOneNoteView(View):
+class ChosenOneNoteView(LoginRequiredMixin, View):
 
     def get(self, request):
         id1 = request.GET.get('id', None)
@@ -162,6 +162,27 @@ class ChosenOneNoteView(View):
         return JsonResponse(data)
 
 
+# class DetailCrudNoteView(View):
+#     def get(self, request):
+#         id1 = request.GET.get('id', None)
+#         # name1 = request.GET.get('name', None)
+#         # address1 = request.GET.get('address', None)
+#         # note_age = request.GET.get('age', None)
+#
+#         obj = Note.objects.get(id=id1)
+#         # obj.name = name1
+#         # obj.address = address1
+#         # obj.age = age1
+#         # obj.save()
+#
+#         note = {'id': obj.id, 'name': obj.name, 'address': obj.address, 'age': obj.age}
+#
+#         data = {
+#             'note': note
+#         }
+#         return JsonResponse(data)
+
+
 class NoteDetailView(LoginRequiredMixin, DetailView):
     """
     Класс представления информации по определенному отчету.
@@ -170,3 +191,13 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'note'
     template_name = 'app_note_manager/notes_detail.html'
     login_url = 'account_login'
+
+
+class NoteDetailAJAXView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        id1 = request.GET.get('id', None)
+        obj = Note.objects.get(id=id1)
+        t = loader.get_template('app_note_manager/notes_detail.html')
+        html = t.render({'note': obj, 'ajax_flag': True})
+        return HttpResponse(json.dumps({'html': html}))

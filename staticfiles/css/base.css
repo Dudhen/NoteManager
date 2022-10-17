@@ -1,6 +1,6 @@
 /* Высота строки */
 tr {
-    line-height: 10px;
+    line-height: 1rem;
     font-size: 15px;
 }
 
