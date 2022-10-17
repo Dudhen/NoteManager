@@ -1,0 +1,57 @@
+<table id="table_id" class="table table-sm table-bordered table-hover">
+{% if note_list %}
+                        <thead>
+                            <tr>
+                                <th class="text-center" width="55%"><p class="fw-light">Заголовок</p></th>
+                                <th class="text-center" width="15%"
+                                    onclick="sortedResults('created_at')" onmouseover="setColor(this, '#dadada')"
+                                    onmouseout ="setColor(this, '#f0f0f0')">
+                                    <p class="fw-light" id="created_at">Время и дата</p></th>
+                                <th class="text-center" width="20%"
+                                    onclick="sortedResults('category')" onmouseover="setColor(this, '#dadada')"
+                                    onmouseout ="setColor(this, '#f0f0f0')">
+                                    <p class="fw-light" id="category">Категория</p></th>
+                                <th class="text-center" width="15%"
+                                    onclick="sortedResults('is_chosen_one')" onmouseover="setColor(this, '#dadada')"
+                                    onmouseout ="setColor(this, '#f0f0f0')">
+                                    <p class="fw-light" id="is_chosen_one">Метка "Избранное"</p></th>
+                                <th class="text-center" width="10%"><p class="fw-light">Удалить</p></th>
+                            </tr>
+                        </thead>
+
+{#                    <div id="result_list">#}
+                        <tbody>
+{#                        <div id="result_list">#}
+                            {% for note in note_list %}
+                            <tr
+{#                                    onclick="location.href=&#34;{% url 'note_detail' note.pk %}&#34;" #}
+                                    id="note_{{note.pk}}" >
+                                    <td class="text-center"><h5>{{ note.title }}</h5></td>
+                                    <td class="text-center">{{ note.created_at|date:"H:i - d.m.Y" }}</td>
+                                    <td class="text-center">{{ note.category }}</td>
+                                    <td align="center">
+                                        {% if note.is_chosen_one %}
+                                        <button class="btn btn-warning form-control" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}')">Убрать</button>
+                                        {% else %}
+                                        <button class="btn btn-outline-dark" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}')">Поставить</button>
+                                        {% endif %}
+                                    </td>
+                                    <td align="center">
+                                        <button class="btn btn-danger form-control" onclick="deleteNote('{{ note.pk }}')">Удалить</button>
+                                    </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+<script>
+    if ('{{ sorted_flag }}' === 'True') {
+        document.getElementById('{{ sorted_item }}').textContent += ' ↓'
+    } else {
+        document.getElementById('{{ sorted_item }}').textContent += ' ↑'
+    }
+</script>
+
+{% else %}
+<p class="lead text-center">Не нашлось ни одной заметки по заданным параметрам</p>
+{% endif %}

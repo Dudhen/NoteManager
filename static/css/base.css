@@ -1,0 +1,23 @@
+/* Высота строки */
+tr {
+    line-height: 1rem;
+    font-size: 15px;
+}
+
+thead {
+    background-color: rgb(240, 240, 240);
+    color: rgb(0, 0, 0);
+}
+
+/* Логотип */
+.logo {
+    height: 75px;
+    width: auto;
+    }
+
+/* Datatables */
+/*Фоновый цвет группировки*/
+tr.group,
+tr.group:hover {
+    background-color: #ddd !important;
+}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Заметка{% endblock title %}
+
+{% block content %}
+    <h3 class="my-3 text-center">Отчет за {{ note.created_at }}</h3>
+    <div class="container-fluid w-100">
+        <div class="w-auto">
+            <div class="fw-bolder">Объект:</div>
+            <p>{{ note.title }}</p>
+        </div>
+        <div class="w-auto">
+            <div class="fw-bolder">Разделы проекта:</div>
+            <p>{{ note.category }}</p>
+        </div>
+        <div class="w-auto text-break">
+            <div class="fw-bolder">Текст отчета:</div>
+            {{ note.text|safe }}
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mt-3">
+            <a href="{% url 'note' note.pk %}" type="button" class="btn btn-danger mb-3">Удалить отчёт</a>
+            <a id="loading" onclick="myFunction()" href="{% url 'note' note.pk %}" type="button" class="btn btn-warning">Изменить отчёт</a>
+            <!--Изменяем текст кнопки после нажатия в течении 2 секунд-->
+            <script>
+                function myFunction() {
+                    document.getElementById("loading").textContent = "Загрузка отчета...";
+                    setTimeout(() => {document.getElementById("loading").textContent = "Изменить отчёт"}, 2000);
+                }
+            </script>
+        </div>
+    </div>
+{% endblock content %}
