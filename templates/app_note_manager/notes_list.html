@@ -11,13 +11,13 @@
             <div class="nav-item">
                 <div class="container">
                     <div class="row mt-3">
-                        <a href="{% url 'note_list' %}" id="loading" type="button"
-                           class="w-100 btn btn btn-success button">Создать новую заметку</a>
+                        <button class="w-100 btn btn btn-success button" type="submit"
+                                id="new_note" onclick="showFormCreateNote('{% url 'note_create' %}',
+                                '{% url 'note_list' %}')">Создать новую заметку</button>
                     </div>
                 </div>
             </div>
         </ul>
-
 
     <button class="btn btn-outline-dark" type="submit" id="filters" onclick="showFilters()">Показать фильтры</button>
     <br>
@@ -27,11 +27,11 @@
         <table>
         <tbody>
         <tr>
-            <td width="42%">{{ form.title|as_crispy_field}}</td>
-            <td>{{ form.category|as_crispy_field}}</td>
-            <td>{{ form.date_from|as_crispy_field}}</td>
-            <td>{{ form.date_by|as_crispy_field}}</td>
-            <td style="position: relative; right: -10px">{{ form.is_chosen_one|as_crispy_field}}</td>
+            <td width="42%">{{ form.title|as_crispy_field }}</td>
+            <td>{{ form.category|as_crispy_field }}</td>
+            <td>{{ form.date_from|as_crispy_field }}</td>
+            <td>{{ form.date_by|as_crispy_field }}</td>
+            <td style="position: relative; right: -10px">{{ form.is_chosen_one|as_crispy_field }}</td>
                 </tr>
         </tbody>
             </table>
@@ -66,8 +66,6 @@
                         <tbody>
                             {% for note in note_list %}
                             <tr class="text-center"
-{#                                    onclick="location.href=&#34;{% url 'note_detail' note.pk %}&#34;"#}
-{#                                    data-toggle="modal" data-target="#myModal"#}
                                     id="note_{{note.pk}}" >
                                     <td class="title" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')"><h5>{{ note.title }}</h5></td>
                                     <td class="created_at" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.created_at|date:"H:i - d.m.Y" }}</td>
@@ -87,8 +85,13 @@
                         </tbody>
                     </table>
     </div>
+        <p class="lead text-center" hidden="hidden" id="message-no-notes">У вас пока нет ни одной заметки</p>
     {% else %}
 <p class="lead text-center">У вас пока нет ни одной заметки</p>
+        <script>
+        var filterButton = document.getElementById("filters")
+        filterButton.hidden = true
+    </script>
 {% endif %}
 </div>
 {% endblock content %}

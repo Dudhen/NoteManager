@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-
 {% block title %}Заметка{% endblock title %}
 
 {% block content %}
+    <div id="note-detail">
     <h3 class="my-3 text-center">Заметка от {{ note.created_at }}</h3>
     <div class="container-fluid w-100">
     <div class="fw-bolder">Отметка "Избранное":</div>
@@ -26,13 +26,18 @@
             </li>
         </div>
     </div>
+    <br>
+
+    <input type="text" readonly id="link-place" class="input-group-text form-control" value="" hidden="hidden">
 
     <div class="container">
         <div class="row mt-3">
-{#            <a href="{% url 'note_detail' note.pk %}" type="button" class="btn btn-danger mb-3">Удалить отчёт</a>#}
-            <a id="loading" href="{% url 'note_detail' note.pk %}" type="button" class="btn btn-warning">Изменить отчёт</a>
-            <br>
-            <button class="btn btn-danger form-control" onclick="deleteNote('{{ note.pk }}', '{% url "note_delete" %}', '{% url "note_list" %}')">Удалить заметку</button>
+            <button class="btn btn-outline-dark form-control" onclick="publishNote('{{ note.pk }}', '{% url "note_publish" %}')">Получить прямую ссылку редактирования</button>
+            <p></p>
+            <button class="btn btn-warning" onclick="updateNote('{{ note.pk }}', '{% url "note_update" %}')">Редактировать заметку</button>
+            <p></p>
+            <button class="btn btn-danger form-control" onclick="deleteNote('{{ note.pk }}', '{% url "note_delete" %}', true, '{{ from_link_flag }}', '{% url "note_list" %}')">Удалить заметку</button>
         </div>
+    </div>
     </div>
 {% endblock content %}

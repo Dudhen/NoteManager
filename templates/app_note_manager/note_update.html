@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}Изменить заметку{% endblock title %}
+
+{% block content %}
+    <h3 class="my-3 text-center">Заметка от {{ note.created_at }}</h3>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+
+<form action='' class="post-form w-100" id="create-form" enctype="multipart/form-data">
+    {% csrf_token %}
+
+            <p>Заголовок:</p>
+            <input id="title-update" type="text" class="input-text form-control"
+                   value="{{ note.title }}">
+
+            <p>Категория:</p>
+            <select id="category-update" class="mb-3 form-select"
+            name="category_name" style="width: 25%">
+            {% for category_name in category_names %}
+                {% if category_name.0 == note.category %}
+                <option selected value="{{ note.category }}">{{ note.category }}</option>
+                {% else %}
+                <option value="{{ category_name.0 }}"> {{ category_name.1 }} </option>
+                {% endif %}
+            {% endfor %}
+        </select>
+
+            <p>Текст:</p>
+            <textarea id="editor" name="editor">{{ note.text }}</textarea>
+            <script type="text/javascript">
+                CKEDITOR.replace('editor');
+            </script>
+            <br>
+            <table style="width: 100%">
+            <td width="60%">
+                <button class="w-100 btn btn-success button"
+                    type="button" onclick="updateNote('{{ note.pk }}', '{% url "note_update" %}', true,
+                        '{{ from_link_flag }}', '{% url "note_list" %}'
+                        ) ">Опубликовать</button>
+            </td>
+            <td width="40%">
+                <a class="w-100 btn btn-outline-dark" type="button" href="{% url 'note_list' %}">Отмена публикации</a>
+            </td>
+                </table>
+        </form>
+{% endblock content %}

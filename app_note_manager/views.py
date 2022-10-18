@@ -1,16 +1,19 @@
 import datetime
 
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 import json
 from django.shortcuts import HttpResponse
 from django.template import loader, RequestContext
-from .forms import FilterNotesForm
+from .forms import FilterNotesForm, NoteCreatedForm
 
 from .models import Note
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
+from app_note_manager.models import category_choices
+from .scripts import get_filters_form_attributes
 
 
 class NoteListView(LoginRequiredMixin, ListView):
@@ -32,8 +35,6 @@ class NoteListView(LoginRequiredMixin, ListView):
         """
         user = self.request.user
 
-        # обнуляем значение "object_name" в сессии,
-        # чтобы при загрузке страницы отображались все объекты
         self.request.session['data_filter'] = False
         self.request.session['sorted_item'] = '-created_at'
 
@@ -48,36 +49,17 @@ class NoteListView(LoginRequiredMixin, ListView):
         """
         Разделить отчеты по объектам для авторизованного пользователя
         """
-        # добавляем информацию об объектах в контекст
-        # для группировки отчетов на странице
         context = super().get_context_data(**kwargs)
 
         user = self.request.user
 
-        # получаем названия объектов существующих отчетов
-        # object_names = JobLog.objects.filter(
-        #     author=user).distinct().values('object_name')
-        category_names = [('Все категории', 'Все категории')]
-        category_names.extend([
-            (note.category, note.category) for note in self.get_queryset()
-        ])
+        filters_form_attributes = get_filters_form_attributes(user)
 
-        try:
-            date_from = Note.objects.filter(
-                author=user
-            ).earliest('created_at').created_at
-            date_by = Note.objects.filter(
-                author=user
-            ).latest('created_at').created_at
-        except Note.DoesNotExist:
-            date_from = None
-            date_by = None
-
-        # print(date_from)
-
-        # записываем в контекст
-        # context["category_names"] = category_names
-        context["form"] = self.form_class(category_choices=category_names, date_from=date_from, date_by=date_by)
+        if self.get_queryset().count() == 0:
+            context["hidden_filterButton"] = True
+        context["form"] = self.form_class(category_choices=filters_form_attributes['category_names'],
+                                          date_from=filters_form_attributes['date_from'],
+                                          date_by=filters_form_attributes['date_by'])
         return context
 
 
@@ -141,10 +123,36 @@ class NoteDeleteView(LoginRequiredMixin, View):
     def get(self, request):
         id1 = request.GET.get('id', None)
         Note.objects.get(id=id1).delete()
-        data = {
-            'deleted': True,
-        }
-        return JsonResponse(data)
+        from_detail_page_flag = request.GET.get('from_detail_page_flag', None)
+        from_link_flag = request.GET.get('from_link_flag', None)
+        if from_detail_page_flag:
+            if from_link_flag:
+                data = {
+                    'from_link_flag': from_link_flag
+                }
+                return JsonResponse(data)
+            else:
+                note_list = Note.objects.filter(
+                    author=self.request.user
+                ).order_by(
+                    '-created_at'
+                )
+                filters_form_attributes = get_filters_form_attributes(self.request.user)
+                form = FilterNotesForm(category_choices=filters_form_attributes['category_names'],
+                                       date_from=filters_form_attributes['date_from'],
+                                       date_by=filters_form_attributes['date_by'])
+                t = loader.get_template('app_note_manager/notes_list.html')
+                html = t.render({'form': form, 'note_list': note_list})
+                return HttpResponse(json.dumps({'html': html}))
+        else:
+            table_remote = False
+            if Note.objects.filter(author=self.request.user).count() == 0:
+                table_remote = True
+            data = {
+                'deleted': True,
+                'table_remote': table_remote
+            }
+            return JsonResponse(data)
 
 
 class ChosenOneNoteView(LoginRequiredMixin, View):
@@ -173,12 +181,101 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
     template_name = 'app_note_manager/notes_detail.html'
     login_url = 'account_login'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['from_link_flag'] = True
+        return context
 
+
+class NoteUpdateView(LoginRequiredMixin, DetailView):
+    """
+    Класс представления информации по определенному отчету.
+    """
+    model = Note
+    context_object_name = 'note'
+    template_name = 'app_note_manager/note_update.html'
+    login_url = 'account_login'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category_names'] = category_choices
+        context['from_link_flag'] = True
+        return context
+
+
+# Сделать удаление заметки по прямой ссылке
 class NoteDetailAJAXView(LoginRequiredMixin, View):
 
     def get(self, request):
         id1 = request.GET.get('id', None)
         obj = Note.objects.get(id=id1)
         t = loader.get_template('app_note_manager/notes_detail.html')
-        html = t.render({'note': obj, 'ajax_flag': True})
+        html = t.render({'note': obj})
         return HttpResponse(json.dumps({'html': html}))
+
+
+class NoteCreateAJAXView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        form = NoteCreatedForm
+        t = loader.get_template('app_note_manager/note_create.html')
+        html = t.render({'form': form})
+        if request.GET.get('time_create', None):
+            Note.objects.create(title=request.GET.get('title', None),
+                                category=request.GET.get('category', None),
+                                text=request.GET.get('text', None),
+                                author=self.request.user)
+            note_list = Note.objects.filter(
+                author=self.request.user
+            ).order_by(
+                '-created_at'
+            )
+            filters_form_attributes = get_filters_form_attributes(self.request.user)
+            form = FilterNotesForm(category_choices=filters_form_attributes['category_names'],
+                                   date_from=filters_form_attributes['date_from'],
+                                   date_by=filters_form_attributes['date_by'])
+            t = loader.get_template('app_note_manager/notes_list.html')
+            html = t.render({'form': form, 'note_list': note_list})
+        return HttpResponse(json.dumps({'html': html}))
+
+
+class NoteUpdateAJAXView(LoginRequiredMixin, View):
+    def get(self, request):
+        id1 = request.GET.get('id', None)
+        note = Note.objects.get(id=id1)
+        t = loader.get_template('app_note_manager/note_update.html')
+        html = t.render({'note': note, 'category_names': category_choices})
+        if request.GET.get('save_flag', None):
+            from_link_flag = request.GET.get('from_link_flag', None)
+
+            title = request.GET.get('title', None)
+            category = request.GET.get('category', None)
+            text = request.GET.get('text', None)
+
+            note.title = title
+            note.category = category
+            note.text = text
+            note.save()
+
+            if from_link_flag:
+                data = {
+                    'from_link_flag': from_link_flag
+                }
+                return JsonResponse(data)
+
+            t = loader.get_template('app_note_manager/notes_detail.html')
+            html = t.render({'note': note})
+
+        return HttpResponse(json.dumps({'html': html}))
+
+
+class NotePublishAJAXView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        id = request.GET.get('id', None)
+        current_site = get_current_site(request)
+        note_link = 'http://{}/note/{}/update/'.format(current_site, id)
+        data = {
+            'note_link': note_link
+        }
+        return JsonResponse(data)

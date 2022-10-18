@@ -5,8 +5,8 @@ from ckeditor.fields import RichTextField
 import uuid
 
 
-category_choices = [('Ссылка', 'Ссылка'),
-                    ('Заметка', 'Заметка'),
+category_choices = [('Заметка', 'Заметка'),
+                    ('Ссылка', 'Ссылка'),
                     ('Памятка', 'Памятка'),
                     ('TODO', 'TODO'),
                     ('...', '...')]
@@ -23,7 +23,7 @@ class Note(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     category = models.CharField(verbose_name='категория', choices=category_choices, blank=False, null=False,
-                                max_length=150)
+                                max_length=150, default=('Заметка', 'Заметка'))
 
     is_chosen_one = models.BooleanField(default=False)
 

@@ -1,5 +1,7 @@
 from django import forms
 
+from app_note_manager.models import Note
+
 
 class FilterNotesForm(forms.Form):
     category = forms.ChoiceField(choices=[], required=False, label='Категория',)
@@ -26,7 +28,15 @@ class FilterNotesForm(forms.Form):
         super(FilterNotesForm, self).__init__(*args, **kwargs)
         if self.date_from:
             self.fields['date_from'].initial = self.date_from
+            print(self.fields['date_from'].initial)
         if self.date_by:
             self.fields['date_by'].initial = self.date_by
         if self.category_choices:
             self.fields['category'].choices = self.category_choices
+
+
+class NoteCreatedForm(forms.ModelForm):
+
+    class Meta:
+        model = Note
+        fields = ('title', 'category')

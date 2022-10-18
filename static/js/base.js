@@ -1,23 +1,101 @@
 
-function deleteNote(id, url, url_redirect) {
+function deleteNote(id, url, from_detail_page_flag, from_link_flag, url_redirect) {
   var action = confirm("Вы уверены, что хотите удалить заметку?");
   if (action !== false) {
     $.ajax({
         url: url,
         data: {
             'id': id,
+            'from_detail_page_flag': from_detail_page_flag,
+            'from_link_flag': from_link_flag
         },
         dataType: 'json',
         success: function (data) {
             if (data.deleted) {
               $("#table_id #note_" + id).remove();
-            }
-            if (url_redirect) {
-                window.location.href = url_redirect
+              if (data.table_remote) {
+                  document.getElementById("filters").hidden = true
+                  document.getElementById("table_id").hidden = true
+                  document.getElementById("message-no-notes").hidden = false
+              }
+            } else {
+                if (data.from_link_flag) {
+                    window.location.href = url_redirect
+                } else {
+                    $('#my_result').html(data.html);
+                }
             }
         }
     });
    }}
+
+function showFormCreateNote(url) {
+  $.ajax({
+      url: url,
+      dataType: 'json',
+      success: function (data) {
+          $('#my_result').html(data.html);
+        }
+    });
+   }
+
+function createNote(url) {
+    const formData = new FormData(document.getElementById("create-form"));
+    var title = formData.get('title');
+    var category = formData.get('category');
+    var text = CKEDITOR.instances.editor.getData();
+  $.ajax({
+      url: url,
+      data: {
+            'title': title,
+            'category': category,
+            'text': text,
+            'time_create': true,
+        },
+      dataType: 'json',
+      success: function (data) {
+          $('#my_result').html(data.html);
+        }
+    });
+   }
+
+function updateNote(id, url, save_flag, from_link_flag, url_redirect) {
+    if (save_flag) {
+        var title = document.getElementById("title-update").value
+        var category = document.getElementById("category-update").value
+        var text = CKEDITOR.instances.editor.getData();
+        var i_data = {'id': id, 'save_flag': save_flag, 'title': title,
+            'category': category, 'text': text, 'from_link_flag': from_link_flag}
+    } else {
+        var i_data = {'id': id, 'from_link_flag': from_link_flag}
+    }
+    $.ajax({
+      url: url,
+      data: i_data,
+      dataType: 'json',
+      success: function (data) {
+          if (data.from_link_flag) {
+              window.location.href = url_redirect
+          } else {
+              $('#note-detail').html(data.html);
+          }
+        }
+    });
+    }
+
+function publishNote(id, url) {
+    $.ajax({
+      url: url,
+      data: {
+          'id': id
+      },
+      dataType: 'json',
+      success: function (data) {
+          document.getElementById('link-place').hidden = false;
+          document.getElementById('link-place').value = data.note_link
+        }
+    });
+   }
 
 
 function chosenOneNote(id, url) {

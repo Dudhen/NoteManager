@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}Новая заметка{% endblock title %}
+
+{% block content %}
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+
+<form action='' class="post-form w-100" id="create-form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.title|as_crispy_field}}
+    {{ form.category|as_crispy_field}}
+            <p>Текст*</p>
+            <textarea id="editor" name="editor"></textarea>
+            <script type="text/javascript">
+                CKEDITOR.replace('editor');
+            </script>
+            <br>
+            <button class="w-100 btn btn btn-success button"
+                    type="button" onclick="createNote('{% url "note_create" %}', '{% url "note_list" %}')">Опубликовать</button>
+        </form>
+{% endblock content %}
