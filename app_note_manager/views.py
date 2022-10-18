@@ -1,17 +1,17 @@
 import datetime
 
+from django.contrib.auth import authenticate, login
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
 from django.views import View
 import json
-from django.shortcuts import HttpResponse
-from django.template import loader, RequestContext
-from .forms import FilterNotesForm, NoteCreatedForm
+from django.shortcuts import HttpResponse, render, redirect
+from django.template import loader
+from .forms import FilterNotesForm, NoteCreatedForm, RegisterUserForm
 
 from .models import Note
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 from app_note_manager.models import category_choices
 from .scripts import get_filters_form_attributes
 
@@ -203,7 +203,6 @@ class NoteUpdateView(LoginRequiredMixin, DetailView):
         return context
 
 
-# Сделать удаление заметки по прямой ссылке
 class NoteDetailAJAXView(LoginRequiredMixin, View):
 
     def get(self, request):
@@ -279,3 +278,27 @@ class NotePublishAJAXView(LoginRequiredMixin, View):
             'note_link': note_link
         }
         return JsonResponse(data)
+
+
+class UserRegister(CreateView):
+    form_class = RegisterUserForm
+    template_name = 'account/register.html'
+    # success_url = reverse_lazy('home')
+
+    def get_context_data(self, **kwargs):
+        context = super(UserRegister, self).get_context_data(**kwargs)
+        context['user_form'] = self.form_class
+        return context
+
+    def post(self, request, *args, **kwargs):
+        user_form = RegisterUserForm(request.POST)
+        if user_form.is_valid():
+            user = user_form.save(commit=False)
+            user.save()
+            username = user_form.cleaned_data.get('username')
+            raw_password = user_form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('note_list')
+        else:
+            return render(request, self.template_name, {'user_form': user_form})

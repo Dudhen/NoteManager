@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: gunicorn КаналсервисTest.wsgi -b 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      # параметры безопасности Django
+      - "DJANGO_SECRET_KEY=django-insecure-jjtpz8&2(s!mv%*m*d0-mukv$$4h(pfo-66t(r(trj$$uc@zf-s="
+      - "DJANGO_DEBUG=True"
+      - "DJANGO_SECURE_SSL_REDIRECT=False"
+      - "DJANGO_SECURE_HSTS_SECONDS=0"
+      - "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=False"
+      - "DJANGO_SECURE_HSTS_PRELOAD=False"
+      - "DJANGO_SESSION_COOKIE_SECURE=False"
+      - "DJANGO_CSRF_COOKIE_SECURE=False"
+      # postgres
+      - "DBNAME=postgres"
+      - "DBUSER=postgres"
+      - "DBPASSWORD=postgres"
+      - "DBHOST=db"
+      - "DBPORT=5432"
+      # telegram
+      - "TOKEN=5782497285:AAGFhmTEu5Qj6icAST-CYEJMfjGMEcJa6eQ"
+    restart: always
+    networks:
+      - djangonetwork
+  db:
+    image: postgres:14.5
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5533:5432
+    restart: always
+    networks:
+      - djangonetwork
+
+volumes:
+  postgres_data:
+
+networks:
+  djangonetwork:
+    driver: bridge

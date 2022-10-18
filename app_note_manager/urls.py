@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import NoteListView, NoteDetailView, NoteDeleteView, ChosenOneNoteView, SearchResultsView, \
-    NoteDetailAJAXView, NoteCreateAJAXView, NoteUpdateAJAXView, NotePublishAJAXView, NoteUpdateView
+    NoteDetailAJAXView, NoteCreateAJAXView, NoteUpdateAJAXView, NotePublishAJAXView, NoteUpdateView, UserRegister
 
 urlpatterns = [
     path('', NoteListView.as_view(), name='note_list'),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('note-update/', NoteUpdateAJAXView.as_view(), name='note_update'),
     path('<uuid:pk>/update/', NoteUpdateView.as_view(), name='note_update_link'),
     path('note-publish/', NotePublishAJAXView.as_view(), name='note_publish'),
+    path(r'registrations/', UserRegister.as_view(), name='registrations')
 ]
