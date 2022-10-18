@@ -3,7 +3,7 @@ version: '3'
 services:
   web:
     build: .
-    command: gunicorn КаналсервисTest.wsgi -b 0.0.0.0:8000
+    command: gunicorn skyeng_test.wsgi -b 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
@@ -12,8 +12,8 @@ services:
       - db
     environment:
       # параметры безопасности Django
-      - "DJANGO_SECRET_KEY=django-insecure-jjtpz8&2(s!mv%*m*d0-mukv$$4h(pfo-66t(r(trj$$uc@zf-s="
-      - "DJANGO_DEBUG=True"
+      - "DJANGO_SECRET_KEY=django-insecure-@ti&43o8n6szb7l^v_$$eu*j(z1n6$$5##&@7g#@7)b_rqyukce#"
+      - "DJANGO_DEBUG=False"
       - "DJANGO_SECURE_SSL_REDIRECT=False"
       - "DJANGO_SECURE_HSTS_SECONDS=0"
       - "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=False"
@@ -21,18 +21,16 @@ services:
       - "DJANGO_SESSION_COOKIE_SECURE=False"
       - "DJANGO_CSRF_COOKIE_SECURE=False"
       # postgres
-      - "DBNAME=postgres"
-      - "DBUSER=postgres"
-      - "DBPASSWORD=postgres"
-      - "DBHOST=db"
-      - "DBPORT=5432"
-      # telegram
-      - "TOKEN=5782497285:AAGFhmTEu5Qj6icAST-CYEJMfjGMEcJa6eQ"
+#      - "DBNAME=postgres"
+#      - "DBUSER=postgres"
+#      - "DBPASSWORD=postgres"
+#      - "DBHOST=db"
+#      - "DBPORT=5432"
     restart: always
     networks:
       - djangonetwork
   db:
-    image: postgres:14.5
+    image: sqlite
     environment:
       - POSTGRES_PASSWORD=postgres
     volumes:
