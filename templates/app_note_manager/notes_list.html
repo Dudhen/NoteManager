@@ -22,76 +22,75 @@
     <button class="btn btn-outline-dark" type="submit" id="filters" onclick="showFilters()">Показать фильтры</button>
     <br>
     <form method="post" action='' class="post-form w-100" id="filters-form" hidden=hidden>
-            {% csrf_token %}
-
-        <table>
-        <tbody>
-        <tr>
-            <td width="42%">{{ form.title|as_crispy_field }}</td>
-            <td>{{ form.category|as_crispy_field }}</td>
-            <td>{{ form.date_from|as_crispy_field }}</td>
-            <td>{{ form.date_by|as_crispy_field }}</td>
-            <td style="position: relative; right: -10px">{{ form.is_chosen_one|as_crispy_field }}</td>
-                </tr>
-        </tbody>
+        {% csrf_token %}
+            <table>
+                <tbody>
+                    <tr>
+                        <td width="42%">{{ form.title|as_crispy_field }}</td>
+                        <td>{{ form.category|as_crispy_field }}</td>
+                        <td>{{ form.date_from|as_crispy_field }}</td>
+                        <td>{{ form.date_by|as_crispy_field }}</td>
+                        <td style="position: relative; right: -10px">{{ form.is_chosen_one|as_crispy_field }}</td>
+                    </tr>
+                </tbody>
             </table>
-            <button class="btn btn-outline-dark w-100" type="button" onclick="applyFilters('{% url "search_result" %}')">Применить</button>
-        </form>
+        <button class="btn btn-outline-dark w-100" type="button" onclick="applyFilters('{% url "search_result" %}')">Применить</button>
+    </form>
     <br>
     {% if note_list %}
-    <div id="result_list">
-                    <table id="table_id" class="table table-sm table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th class="text-center" width="55%"><p class="fw-light">Заголовок</p></th>
-                                <th class="text-center" width="15%"
-                                    onclick="sortedResults('created_at', '{% url "search_result" %}')"
-                                    onmouseover="setColor(this, '#dadada')"
-                                    onmouseout ="setColor(this, '#f0f0f0')">
-                                    <p class="fw-light" id="created_at">Время и дата ↑</p></th>
-                                <th class="text-center" width="20%"
-                                    onclick="sortedResults('category', '{% url "search_result" %}')"
-                                    onmouseover="setColor(this, '#dadada')"
-                                    onmouseout ="setColor(this, '#f0f0f0')">
-                                    <p class="fw-light" id="category">Категория</p></th>
-                                <th class="text-center" width="15%"
-                                    onclick="sortedResults('is_chosen_one', '{% url "search_result" %}')"
-                                    onmouseover="setColor(this, '#dadada')"
-                                    onmouseout ="setColor(this, '#f0f0f0')">
-                                    <p class="fw-light" id="is_chosen_one">Метка "Избранное"</p></th>
-                                <th class="text-center" width="10%"><p class="fw-light">Удалить</p></th>
-                            </tr>
-                        </thead>
+        <div id="result_list">
+            <table id="table_id" class="table table-sm table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center" width="55%"><p class="fw-light">Заголовок</p></th>
+                        <th class="text-center" width="15%"
+                            onclick="sortedResults('created_at', '{% url "search_result" %}')"
+                            onmouseover="setColor(this, '#dadada')"
+                            onmouseout ="setColor(this, '#f0f0f0')">
+                            <p class="fw-light" id="created_at">Время и дата ↑</p></th>
+                        <th class="text-center" width="20%"
+                            onclick="sortedResults('category', '{% url "search_result" %}')"
+                            onmouseover="setColor(this, '#dadada')"
+                            onmouseout ="setColor(this, '#f0f0f0')">
+                            <p class="fw-light" id="category">Категория</p></th>
+                        <th class="text-center" width="15%"
+                            onclick="sortedResults('is_chosen_one', '{% url "search_result" %}')"
+                            onmouseover="setColor(this, '#dadada')"
+                            onmouseout ="setColor(this, '#f0f0f0')">
+                            <p class="fw-light" id="is_chosen_one">Метка "Избранное"</p></th>
+                        <th class="text-center" width="10%"><p class="fw-light">Удалить</p></th>
+                    </tr>
+                </thead>
 
-                        <tbody>
-                            {% for note in note_list %}
-                            <tr class="text-center"
-                                    id="note_{{note.pk}}" >
-                                    <td class="title" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')"><h5>{{ note.title }}</h5></td>
-                                    <td class="created_at" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.created_at|date:"H:i - d.m.Y" }}</td>
-                                    <td class="category" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.category }}</td>
-                                    <td align="center" class="is_chosen_one">
-                                        {% if note.is_chosen_one %}
-                                        <button class="btn btn-warning" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Убрать </button>
-                                        {% else %}
-                                        <button class="btn btn-outline-dark" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Поставить</button>
-                                        {% endif %}
-                                    </td>
-                                    <td align="center">
-                                        <button class="btn btn-danger" onclick="deleteNote('{{ note.pk }}', '{% url "note_delete" %}')">Удалить</button>
-                                    </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-    </div>
+                <tbody>
+                    {% for note in note_list %}
+                        <tr class="text-center"
+                            id="note_{{note.pk}}" >
+                            <td class="title" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')"><h5>{{ note.title }}</h5></td>
+                            <td class="created_at" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.created_at|date:"H:i - d.m.Y" }}</td>
+                            <td class="category" onclick="showNote('{{ note.pk }}', '{% url 'note_detail_ajax' %}')">{{ note.category }}</td>
+                            <td align="center" class="is_chosen_one">
+                                {% if note.is_chosen_one %}
+                                    <button class="btn btn-warning" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Убрать </button>
+                                {% else %}
+                                    <button class="btn btn-outline-dark" id="i_id_{{ note.pk }}" onclick="chosenOneNote('{{ note.pk }}', '{% url "chosen_one_note" %}')">Поставить</button>
+                                {% endif %}
+                            </td>
+                            <td align="center">
+                                <button class="btn btn-danger" onclick="deleteNote('{{ note.pk }}', '{% url "note_delete" %}')">Удалить</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <p class="lead text-center" hidden="hidden" id="message-no-notes">У вас пока нет ни одной заметки</p>
     {% else %}
-<p class="lead text-center">У вас пока нет ни одной заметки</p>
-        <script>
-        var filterButton = document.getElementById("filters")
-        filterButton.hidden = true
-    </script>
-{% endif %}
-</div>
+        <p class="lead text-center">У вас пока нет ни одной заметки</p>
+            <script>
+            var filterButton = document.getElementById("filters")
+            filterButton.hidden = true
+            </script>
+    {% endif %}
+        </div>
 {% endblock content %}

@@ -1,5 +1,4 @@
 import datetime
-
 from django.contrib.auth import authenticate, login
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse
@@ -8,7 +7,6 @@ import json
 from django.shortcuts import HttpResponse, render, redirect
 from django.template import loader
 from .forms import FilterNotesForm, NoteCreatedForm, RegisterUserForm
-
 from .models import Note
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView
@@ -18,7 +16,7 @@ from .scripts import get_filters_form_attributes
 
 class NoteListView(LoginRequiredMixin, ListView):
     """
-    Класс представления журнала работ.
+    Класс представления списка заметок.
     LoginRequiredMixin - для перенаправления неавторизованных
     пользователей на страницу авторизации
     """
@@ -31,7 +29,6 @@ class NoteListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         """
         Получить отчеты относящиеся только к пользователю
-        (!!!но не к контрагенту!!!)
         """
         user = self.request.user
 
@@ -47,7 +44,8 @@ class NoteListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         """
-        Разделить отчеты по объектам для авторизованного пользователя
+        Отобразить форму фильтров поиска только когда
+        есть заметки
         """
         context = super().get_context_data(**kwargs)
 
@@ -64,7 +62,11 @@ class NoteListView(LoginRequiredMixin, ListView):
 
 
 class SearchResultsView(LoginRequiredMixin, View):
-
+    """
+    Класс представления поисковой выдачи фильтров и сортировки.
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации
+    """
     def get(self, request):
         user = self.request.user
         sorted_item = request.GET.get('sorted_item', None)
@@ -119,7 +121,11 @@ class SearchResultsView(LoginRequiredMixin, View):
 
 
 class NoteDeleteView(LoginRequiredMixin, View):
-
+    """
+    Класс представления для удаления заметки (как на общей странице, так и на детальной).
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации
+    """
     def get(self, request):
         id1 = request.GET.get('id', None)
         Note.objects.get(id=id1).delete()
@@ -156,7 +162,12 @@ class NoteDeleteView(LoginRequiredMixin, View):
 
 
 class ChosenOneNoteView(LoginRequiredMixin, View):
-
+    """
+    Класс представления для добавления и удаления
+    заметки в список "Избранного".
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации.
+    """
     def get(self, request):
         id1 = request.GET.get('id', None)
         note = Note.objects.get(id=id1)
@@ -174,7 +185,9 @@ class ChosenOneNoteView(LoginRequiredMixin, View):
 
 class NoteDetailView(LoginRequiredMixin, DetailView):
     """
-    Класс представления информации по определенному отчету.
+    Класс представления детальной статичной страницы заметки.
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации.
     """
     model = Note
     context_object_name = 'note'
@@ -189,7 +202,9 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
 
 class NoteUpdateView(LoginRequiredMixin, DetailView):
     """
-    Класс представления информации по определенному отчету.
+    Класс представления статического обновления данных в заметке.
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации.
     """
     model = Note
     context_object_name = 'note'
@@ -204,7 +219,11 @@ class NoteUpdateView(LoginRequiredMixin, DetailView):
 
 
 class NoteDetailAJAXView(LoginRequiredMixin, View):
-
+    """
+    Класс представления детальной динамичной страницы заметки.
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации.
+    """
     def get(self, request):
         id1 = request.GET.get('id', None)
         obj = Note.objects.get(id=id1)
@@ -214,7 +233,11 @@ class NoteDetailAJAXView(LoginRequiredMixin, View):
 
 
 class NoteCreateAJAXView(LoginRequiredMixin, View):
-
+    """
+    Класс представления для создания новой заметки.
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации.
+    """
     def get(self, request):
         form = NoteCreatedForm
         t = loader.get_template('app_note_manager/note_create.html')
@@ -239,6 +262,11 @@ class NoteCreateAJAXView(LoginRequiredMixin, View):
 
 
 class NoteUpdateAJAXView(LoginRequiredMixin, View):
+    """
+    Класс представления динамического обновления данных в заметке.
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации.
+    """
     def get(self, request):
         id1 = request.GET.get('id', None)
         note = Note.objects.get(id=id1)
@@ -269,7 +297,12 @@ class NoteUpdateAJAXView(LoginRequiredMixin, View):
 
 
 class NotePublishAJAXView(LoginRequiredMixin, View):
-
+    """
+    Класс представления для получения URL-ссылки на
+    страницу редактирования определенной заметки.
+    LoginRequiredMixin - для перенаправления неавторизованных
+    пользователей на страницу авторизации.
+    """
     def get(self, request):
         id = request.GET.get('id', None)
         current_site = get_current_site(request)
@@ -281,6 +314,9 @@ class NotePublishAJAXView(LoginRequiredMixin, View):
 
 
 class UserRegister(CreateView):
+    """
+    Класс представления для регистрации пользователя.
+    """
     form_class = RegisterUserForm
     template_name = 'account/register.html'
     # success_url = reverse_lazy('home')

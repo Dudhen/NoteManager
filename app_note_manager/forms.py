@@ -6,6 +6,9 @@ from app_note_manager.models import Note
 
 
 class FilterNotesForm(forms.Form):
+    """
+    Форма фильтров поиска по заметкам
+    """
     category = forms.ChoiceField(choices=[], required=False, label='Категория',)
 
     title = forms.CharField(required=False, label='Поиск текста в заголовках')
@@ -20,8 +23,8 @@ class FilterNotesForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         """
-        Передаем в форму список объектов только
-        для авторизованного пользователя
+        Передаем в форму список категорий, а так же
+        самую раннюю и самую позднюю даты создания заметки
         """
         # object_choices передается из View
         self.date_from = kwargs.pop('date_from', None)
@@ -30,7 +33,6 @@ class FilterNotesForm(forms.Form):
         super(FilterNotesForm, self).__init__(*args, **kwargs)
         if self.date_from:
             self.fields['date_from'].initial = self.date_from
-            print(self.fields['date_from'].initial)
         if self.date_by:
             self.fields['date_by'].initial = self.date_by
         if self.category_choices:
@@ -38,13 +40,18 @@ class FilterNotesForm(forms.Form):
 
 
 class NoteCreatedForm(forms.ModelForm):
-
+    """
+    Форма создания заметки
+    """
     class Meta:
         model = Note
         fields = ('title', 'category')
 
 
 class RegisterUserForm(UserCreationForm):
+    """
+    Форма регистрации пользователя
+    """
     username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     password2 = forms.CharField(label='Подтверждение пароля', widget=forms.PasswordInput(attrs={'class': 'form-input'}))

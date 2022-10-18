@@ -11,15 +11,15 @@
 
 <form action='' class="post-form w-100" id="create-form" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.title|as_crispy_field}}
-    {{ form.category|as_crispy_field}}
-            <p>Текст*</p>
-            <textarea id="editor" name="editor"></textarea>
-            <script type="text/javascript">
-                CKEDITOR.replace('editor');
-            </script>
-            <br>
-            <button class="w-100 btn btn btn-success button"
-                    type="button" onclick="createNote('{% url "note_create" %}', '{% url "note_list" %}')">Опубликовать</button>
-        </form>
+        {{ form.title|as_crispy_field}}
+        {{ form.category|as_crispy_field}}
+        <p>Текст*</p>
+        <textarea id="editor" name="editor"></textarea>
+        <script type="text/javascript">
+            CKEDITOR.replace('editor');
+        </script>
+        <br>
+    <button class="w-100 btn btn btn-success button"
+            type="button" onclick="createNote('{% url "note_create" %}', '{% url "note_list" %}')">Опубликовать</button>
+</form>
 {% endblock content %}

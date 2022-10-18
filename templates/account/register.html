@@ -13,15 +13,15 @@
     <div class="container">
         <form method="post" action='.' class="post-form w-100" name="my-form">
             {% csrf_token %}
-            <div class="text-center"><h1 class="mb-3 fw-normal">Регистрация</h1></div>
-        {{ user_form|crispy }}
-                <p></p>
-        <button type="submit" class="w-100 btn btn-lg btn-success">Зарегистрироваться</button>
-            </form>
+                <div class="text-center"><h1 class="mb-3 fw-normal">Регистрация</h1></div>
+                    {{ user_form|crispy }}
+                    <p></p>
+                <button type="submit" class="w-100 btn btn-lg btn-success">Зарегистрироваться</button>
+        </form>
         <br>
-<form action="{% url 'account_logout' %}">
-   <button class="btn btn-outline-dark">Назад</button>
-  </form>
+        <form action="{% url 'account_logout' %}">
+            <button class="btn btn-outline-dark">Назад</button>
+        </form>
     </div>
 {% endblock content %}
 </body>

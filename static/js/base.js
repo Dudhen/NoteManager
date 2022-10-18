@@ -1,4 +1,3 @@
-
 function deleteNote(id, url, from_detail_page_flag, from_link_flag, url_redirect) {
   var action = confirm("Вы уверены, что хотите удалить заметку?");
   if (action !== false) {
@@ -27,7 +26,8 @@ function deleteNote(id, url, from_detail_page_flag, from_link_flag, url_redirect
             }
         }
     });
-   }}
+  }
+}
 
 function showFormCreateNote(url) {
   $.ajax({
@@ -37,7 +37,7 @@ function showFormCreateNote(url) {
           $('#my_result').html(data.html);
         }
     });
-   }
+  }
 
 function createNote(url) {
     const formData = new FormData(document.getElementById("create-form"));
@@ -117,28 +117,27 @@ function chosenOneNote(id, url) {
     });
    }
 
-   function sortedResults(sorted_item, url) {
-      $.ajax({
+function sortedResults(sorted_item, url) {
+    $.ajax({
         url: url,
         data: {
             'sorted_item': sorted_item,
         },
         dataType: 'json',
         success: function (data) {
-
             $('#result_list').html(data.html);
-         }
+        }
     });
-   }
+}
 
-   function applyFilters(url) {
-       const formData = new FormData(document.getElementById("filters-form"));
-       var title = formData.get('title');
-       var category = formData.get('category');
-       var date_from = formData.get('date_from');
-       var date_by = formData.get('date_by');
-       var is_chosen_one = formData.get('is_chosen_one');
-      $.ajax({
+function applyFilters(url) {
+    const formData = new FormData(document.getElementById("filters-form"));
+    var title = formData.get('title');
+    var category = formData.get('category');
+    var date_from = formData.get('date_from');
+    var date_by = formData.get('date_by');
+    var is_chosen_one = formData.get('is_chosen_one');
+    $.ajax({
         url: url,
         data: {
             'title': title,
@@ -152,37 +151,35 @@ function chosenOneNote(id, url) {
         success: function (data) {
 
             $('#result_list').html(data.html);
-         }
+        }
     });
    }
 
-    function showFilters() {
-        var filters_form_hidden = document.getElementById('filters-form').hidden;
-        if (filters_form_hidden === false) {
-            document.getElementById('filters-form').hidden = true;
-            document.getElementById('filters').textContent = 'Показать фильтры'
-        } else {
-            document.getElementById('filters-form').hidden = false;
-            document.getElementById('filters').textContent = 'Скрыть фильтры'
+function showFilters() {
+    var filters_form_hidden = document.getElementById('filters-form').hidden;
+    if (filters_form_hidden === false) {
+        document.getElementById('filters-form').hidden = true;
+        document.getElementById('filters').textContent = 'Показать фильтры'
+    } else {
+        document.getElementById('filters-form').hidden = false;
+        document.getElementById('filters').textContent = 'Скрыть фильтры'
                 }
             }
 
-    function setColor(thisObj, color)
- {
+function setColor(thisObj, color) {
     thisObj.style.backgroundColor = color;
- }
-
-
- function showNote(id, url) {
-  $.ajax({
-        url: url,
-        data: {
-            'id': id,
-        },
-        dataType: 'json',
-        success: function (data) {
-
-            $('#my_result').html(data.html);
-         }
-    });
 }
+
+
+function showNote(id, url) {
+$.ajax({
+    url: url,
+    data: {
+        'id': id,
+    },
+    dataType: 'json',
+    success: function (data) {
+        $('#my_result').html(data.html);
+    }
+}
+);}

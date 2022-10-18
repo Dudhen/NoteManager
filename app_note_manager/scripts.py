@@ -2,7 +2,9 @@ from app_note_manager.models import Note
 
 
 def get_filters_form_attributes(user):
-
+    """
+    Функция, возвращающая необходимые данные для формы фильтров поиска
+    """
     notes = Note.objects.filter(
         author=user
     ).order_by(

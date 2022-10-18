@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from ckeditor.fields import RichTextField
 import uuid
 
-
+# выбор категории заметки
 category_choices = [('Заметка', 'Заметка'),
                     ('Ссылка', 'Ссылка'),
                     ('Памятка', 'Памятка'),
@@ -13,7 +13,9 @@ category_choices = [('Заметка', 'Заметка'),
 
 
 class Note(models.Model):
-
+    """
+    Модель заметки
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     title = models.CharField(max_length=1000, verbose_name='заголовок')
@@ -31,3 +33,7 @@ class Note(models.Model):
 
     def __str__(self):
         return '{}. ({})'.format(self.title, self.created_at)
+
+    class Meta:
+        verbose_name = 'Заметка'
+        verbose_name_plural = 'Заметки'
