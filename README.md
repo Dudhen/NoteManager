@@ -5,8 +5,8 @@
 Перед запуском необходимо установить [GIT](https://git-scm.com/download/win), а так же библиотеку pip.
 1. Клонируем репозиторий (или определенную ветку) и заходим в папку:
 ```
-$ git clone --branch master https://github.com/Dudhen/SkyEngTest.git
-$ cd SkyEngTest
+$ git clone --branch master https://github.com/Dudhen/NoteManager.git
+$ cd NoteManager
 ```
 2. Загружаем все необходимые библиотеки:
 ```
